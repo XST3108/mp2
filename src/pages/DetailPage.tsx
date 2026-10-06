@@ -5,6 +5,45 @@ import { useMeals } from '../hooks/useMeals'
 import type { DetailNavState } from '../navState'
 import styles from './DetailPage.module.css'
 
+interface InstructionLine {
+  text: string
+  heading: boolean
+}
+
+// API 里的做法文本格式不统一，这里整理成统一的"小标题 + 编号步骤"
+function parseInstructions(raw: string): InstructionLine[] {
+  const result: InstructionLine[] = []
+  let afterMarker = false // 上一行是不是单独的编号
+
+  for (const rawLine of raw.split(/\r?\n/)) {
+    const line = rawLine.trim()
+    if (!line) continue
+
+    // 单独成行的编号，例如 "1"、"2."、"step 3"、"STEP 4:"，不显示
+    if (/^(step\s*)?\d+\s*[.:)]?$/i.test(line)) {
+      afterMarker = true
+      continue
+    }
+
+    // 去掉行首自带的编号，例如 "1. Preheat..."、"Step 2: Mix..."，统一由页面编号
+    const text = line.replace(/^(step\s*)?\d+\s*[.:)-]\s*/i, '')
+    if (!text) continue
+
+    // 小标题：很短、不以句号结尾，并且以冒号结尾 / 全大写 / 紧跟在编号后面
+    // 例如 "Cooking:"、"STIR FRY"、编号 "1" 下面的 "Prepare the Figs"
+    const short = text.length <= 45 && !/[.!?]$/.test(text)
+    const heading =
+      short &&
+      (text.endsWith(':') ||
+        (/[A-Z]/.test(text) && text === text.toUpperCase()) ||
+        afterMarker)
+
+    result.push({ heading, text: heading ? text.replace(/:$/, '') : text })
+    afterMarker = false
+  }
+  return result
+}
+
 function DetailPage() {
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
@@ -54,11 +93,8 @@ function DetailPage() {
   }
 
   const navState: DetailNavState = { ids }
-  // 把做法拆成一步一步，去掉 "step 1" 这类空标题
-  const steps = meal.instructions
-    .split(/\r?\n/)
-    .map((s) => s.trim())
-    .filter((s) => s && !/^step\s*\d+:?$/i.test(s))
+  const steps = parseInstructions(meal.instructions)
+  let stepNumber = 0
 
   return (
     <article className={styles.detail}>
@@ -141,11 +177,20 @@ function DetailPage() {
         </section>
         <section className={styles.panel}>
           <h2>Instructions</h2>
-          <ol className={styles.steps}>
-            {steps.map((step, i) => (
-              <li key={i}>{step}</li>
-            ))}
-          </ol>
+          <div className={styles.steps}>
+            {steps.map((step, i) =>
+              step.heading ? (
+                <h3 key={i} className={styles.stepHeading}>
+                  {step.text}
+                </h3>
+              ) : (
+                <div key={i} className={styles.step}>
+                  <span className={styles.stepNumber}>{++stepNumber}</span>
+                  <p className={styles.stepText}>{step.text}</p>
+                </div>
+              ),
+            )}
+          </div>
         </section>
       </div>
     </article>
