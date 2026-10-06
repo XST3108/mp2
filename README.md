@@ -1,6 +1,25 @@
 # MP 2: Front-end App
 ### Due: Tuesday, Oct 6, 2026, 11:59PM CT
 
+## Submission Notes
+
+- **Live site:** https://xst3108.github.io/mp2/
+- **API:** [TheMealDB](https://www.themealdb.com/api.php)
+
+### LLM Usage
+This project was built with the help of **Claude (Anthropic)**, used through the Claude desktop app. Claude generated the source code for this MP, set up the project, and tested the features in a browser. The full chat log is in [`llm-chatlogs/chatlog.md`](llm-chatlogs/chatlog.md), as required by the LLM Usage Policy below.
+
+### Sources
+- [TheMealDB API documentation](https://www.themealdb.com/api.php)
+- [React documentation](https://react.dev/learn)
+- [React Router documentation](https://reactrouter.com/)
+- [Axios documentation](https://axios-http.com/docs/intro)
+- [Vite documentation](https://vite.dev/guide/) (CSS Modules, `base` config)
+- [Normalize.css](https://necolas.github.io/normalize.css/)
+- Claude (Anthropic), see LLM Usage above
+
+---
+
 ## Table of Contents
 1. [Assignment](#assignment)
 2. [Grading Breakdown](#grading-breakdown)
