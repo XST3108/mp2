@@ -1,0 +1,9 @@
+.wrap {
+  padding: 60px 16px;
+  text-align: center;
+}
+
+.link {
+  color: var(--accent);
+  font-weight: 600;
+}
